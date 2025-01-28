@@ -1,0 +1,27 @@
+services:
+  table_app:
+    build:
+      context: .
+    container_name: table_app
+    depends_on:
+      ready_app:
+        condition: service_healthy
+    links:
+      - ready_app
+    restart: always
+  ready_app:
+    image: mysql:latest
+    container_name: ready_app
+    environment:
+      MYSQL_ROOT_PASSWORD: example_root_password
+      MYSQL_DATABASE: example_database
+      MYSQL_USER: example_user
+      MYSQL_PASSWORD: example_password
+    ports:
+      - "3306:3306"
+    restart: always  
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
